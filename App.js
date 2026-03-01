@@ -6,6 +6,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import Profile from './screens/Profile';
 import ManageExpense from './screens/ManageExpense';
 import RecentExpenses from './screens/RecentExpenses';
 import StockController from './screens/StockContoreller';
@@ -26,8 +27,18 @@ function ExpensesOverview() {
         headerTintColor: 'white',
         tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         tabBarActiveTintColor: GlobalStyles.colors.accent500,
+        headerLeft: ({ tintColor }) => (
+          <IconButton
+            icon="menu"
+            size={24}
+            color={tintColor}
+            onPress={() => {
+              navigation.toggleDrawer();
+            }}
+          />
+        ),
         headerRight: ({ tintColor }) => (
-          <IconButton 
+          <IconButton
             icon="add"
             size={24}
             color={tintColor}
@@ -66,16 +77,36 @@ function ExpensesOverview() {
 
 function DrawerNavigation() {
   return (
-    <Drawer.Navigator>
+    <Drawer.Navigator
+      screenOptions={{
+        drawerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+        drawerActiveTintColor: GlobalStyles.colors.primary50,
+        drawerActiveBackgroundColor: GlobalStyles.colors.primary500,
+        drawerInactiveTintColor: GlobalStyles.colors.primary100,
+        drawerInactiveBackgroundColor: GlobalStyles.colors.primary500,
+      }}>
       <Drawer.Screen
         name="Home"
         component={ExpensesOverview}
-        options={{ headerShown: false, title: 'Anasayfa' }}
+        options={{ headerShown: false, title: 'Home' }}
+      />
+      <Drawer.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          title: 'Profile',
+          headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+          headerTintColor: 'white',
+        }}
       />
       <Drawer.Screen
         name="StockController"
         component={StockController}
-        options={{ title: 'Stok Takip' }}
+        options={{
+          title: 'Stock Tracking',
+          headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+          headerTintColor: 'white',
+        }}
       />
     </Drawer.Navigator>
   );
