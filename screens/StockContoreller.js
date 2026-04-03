@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AppContext } from '../store/app-context';
 import {
     View,
     Text,
@@ -12,11 +13,9 @@ import { GlobalStyles } from '../constants/styles';
 import CustomButton from '../components/UI/Button';
 
 function StockController() {
-    //categori ve stok statelerini burada tanımlıcam
-    const [categories, setCategories] = useState([]);
+    const appCtx = useContext(AppContext);
     const [newCategory, setNewCategory] = useState('');
     const [selectedCategory, setSelectedCategory] = useState(null);
-    const [stocks, setStocks] = useState({});
     const [newStockInput, setNewStockInput] = useState('');
 
     const addCategory = () => {
@@ -24,12 +23,11 @@ function StockController() {
         if (!trimmed) {
             return;
         }
-        if (categories.includes(trimmed)) {
+        if (appCtx.categories.includes(trimmed)) {
             setNewCategory('');
             return;
         }
-        setCategories((prev) => [...prev, trimmed]);
-        setStocks((prev) => ({ ...prev, [trimmed]: '' }));
+        appCtx.addCategory(trimmed);
         setNewCategory('');
     };
 
@@ -57,8 +55,8 @@ function StockController() {
             {/* horizontal category list */}
             <View style={styles.categoriesWrapper}>
                 <ScrollView horizontal style={styles.categoriesContainer}>
-                    {Array.isArray(categories) &&
-                        categories.map((cat) => (
+                    {Array.isArray(appCtx.categories) &&
+                        appCtx.categories.map((cat) => (
                             <TouchableOpacity
                                 key={cat}
                                 style={[
@@ -88,14 +86,14 @@ function StockController() {
                                 <Text style={styles.textBase}>Current quantity</Text>
                             </View>
                             <View style={styles.amountContainer}>
-                                <Text style={styles.amount}>{stocks[selectedCategory]}</Text>
+                                <Text style={styles.amount}>{appCtx.stocks[selectedCategory]}</Text>
                             </View>
                         </View>
                         <View style={[styles.addContainer, styles.editStockContainer]}>
                             <TextInput
                                 keyboardType="numeric"
                                 placeholder={
-                                    stocks[selectedCategory] !== undefined && stocks[selectedCategory] !== ''
+                                    appCtx.stocks[selectedCategory] !== undefined && appCtx.stocks[selectedCategory] !== ''
                                         ? "Update stock quantity"
                                         : "New stock quantity"
                                 }
@@ -109,10 +107,7 @@ function StockController() {
                                 onPress={() => {
                                     const val = parseInt(newStockInput, 10);
                                     if (!isNaN(val)) {
-                                        setStocks((prev) => ({
-                                            ...prev,
-                                            [selectedCategory]: val,
-                                        }));
+                                        appCtx.setStock(selectedCategory, val);
                                         setNewStockInput('');
                                     }
                                 }}
