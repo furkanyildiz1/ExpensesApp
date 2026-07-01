@@ -17,7 +17,7 @@ function Profile() {
 
     // 1. Expense Chart Data
     const expenseData = expensesCtx.expenses.reduce((acc, expense) => {
-        const name = expense.description || 'Other';
+        const name = expense.category || 'Diğer';
         if (!acc[name]) acc[name] = 0;
         acc[name] += expense.amount;
         return acc;

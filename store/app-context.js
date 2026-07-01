@@ -1,4 +1,5 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
+import { fetchBusinessData, updateBusinessData } from '../util/http';
 
 export const AppContext = createContext({
   isBusinessMode: false,
@@ -14,19 +15,56 @@ function AppContextProvider({ children }) {
   const [categories, setCategories] = useState([]);
   const [stocks, setStocks] = useState({});
 
+  useEffect(() => {
+    async function loadBusinessData() {
+      try {
+        const data = await fetchBusinessData();
+        if (data) {
+          setCategories(data.categories || []);
+          setStocks(data.stocks || {});
+        }
+      } catch (error) {
+        console.log('Error loading business data from Firebase:', error);
+      }
+    }
+    loadBusinessData();
+  }, []);
+
   function toggleBusinessMode() {
     setIsBusinessMode((prevMode) => !prevMode);
   }
 
-  function addCategory(category) {
+  async function addCategory(category) {
     if (!categories.includes(category)) {
-      setCategories((prev) => [...prev, category]);
-      setStocks((prev) => ({ ...prev, [category]: '' }));
+      const updatedCategories = [...categories, category];
+      const updatedStocks = { ...stocks, [category]: 0 };
+
+      setCategories(updatedCategories);
+      setStocks(updatedStocks);
+
+      try {
+        await updateBusinessData({
+          categories: updatedCategories,
+          stocks: updatedStocks,
+        });
+      } catch (error) {
+        console.log('Error saving new category to Firebase:', error);
+      }
     }
   }
 
-  function setStock(category, quantity) {
-    setStocks((prev) => ({ ...prev, [category]: quantity }));
+  async function setStock(category, quantity) {
+    const updatedStocks = { ...stocks, [category]: quantity };
+    setStocks(updatedStocks);
+
+    try {
+      await updateBusinessData({
+        categories: categories,
+        stocks: updatedStocks,
+      });
+    } catch (error) {
+      console.log('Error saving stock update to Firebase:', error);
+    }
   }
 
   const value = {

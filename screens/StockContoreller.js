@@ -7,6 +7,7 @@ import {
     ScrollView,
     TouchableOpacity,
     StyleSheet,
+    FlatList,
 } from 'react-native';
 
 import { GlobalStyles } from '../constants/styles';
@@ -17,6 +18,7 @@ function StockController() {
     const [newCategory, setNewCategory] = useState('');
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [newStockInput, setNewStockInput] = useState('');
+    const [listStock, setListStock] = useState({});
 
     const addCategory = () => {
         const trimmed = newCategory.trim();
@@ -36,9 +38,9 @@ function StockController() {
         setNewStockInput('');
     };
 
+
     return (
         <View style={styles.container}>
-            {/* add new category input */}
             <View style={styles.addContainer}>
                 <TextInput
                     value={newCategory}
@@ -74,7 +76,6 @@ function StockController() {
                 </ScrollView>
             </View>
 
-            {/* display stock for selected category */}
             <View style={styles.stockContainer}>
                 {selectedCategory ? (
                     <>
@@ -108,6 +109,13 @@ function StockController() {
                                     const val = parseInt(newStockInput, 10);
                                     if (!isNaN(val)) {
                                         appCtx.setStock(selectedCategory, val);
+                                        setListStock(prev => ({
+                                            ...prev,
+                                            [selectCategory]: [
+                                                {miktar: val, tarih: new Date()},
+                                                ...(prev[selectedCategory] || [])
+                                            ]
+                                        }))
                                         setNewStockInput('');
                                     }
                                 }}
@@ -115,6 +123,18 @@ function StockController() {
                                 Save
                             </CustomButton>
                         </View>
+                        <FlatList
+                            data={listStock[selectedCategory] || []}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => (
+                                <View style={styles.stockHistoryItem}>
+                                    <Text style={styles.stockHistoryText}>
+                                        Miktar: {item.miktar} - Tarih: {item.tarih.toLocaleString()}
+                                    </Text>
+                                </View>
+                            )}
+                            style={styles.stockHistoryList}
+                        />
                     </>
                 ) : (
                     <Text style={styles.infoText}>Choose a category</Text>

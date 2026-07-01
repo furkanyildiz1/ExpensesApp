@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { GlobalStyles } from '../../constants/styles';
 import { getFormattedDate } from '../../util/date';
 
-function ExpenseItem({ id, description, amount, date }) {
+function ExpenseItem({ id, description, amount, date, category }) {
   const navigation = useNavigation();
 
   function expensePressHandler() {
@@ -20,10 +20,15 @@ function ExpenseItem({ id, description, amount, date }) {
     >
       <View style={styles.expenseItem}>
         <View>
-          <Text style={[styles.textBase, styles.description]}>
-            {description}
+          <Text style={[styles.textBase, styles.category]}>
+            {category || 'Diğer'}
           </Text>
-          <Text style={styles.textBase}>{getFormattedDate(date)}</Text>
+          {description ? (
+            <Text style={[styles.textBase, styles.description]}>
+              {description}
+            </Text>
+          ) : null}
+          <Text style={styles.textBaseDate}>{getFormattedDate(date)}</Text>
         </View>
         <View style={styles.amountContainer}>
           <Text style={styles.amount}>{amount.toFixed(2)}</Text>
@@ -55,10 +60,20 @@ const styles = StyleSheet.create({
   textBase: {
     color: GlobalStyles.colors.primary50,
   },
-  description: {
+  category: {
     fontSize: 16,
-    marginBottom: 4,
     fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  description: {
+    fontSize: 14,
+    marginBottom: 4,
+    fontStyle: 'italic',
+    opacity: 0.9,
+  },
+  textBaseDate: {
+    color: GlobalStyles.colors.primary100,
+    fontSize: 12,
   },
   amountContainer: {
     paddingHorizontal: 12,

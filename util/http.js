@@ -22,7 +22,8 @@ export async function fetchExpenses(){
             id: key,
             amount: response.data[key].amount,
             date: new Date(response.data[key].date),
-            description: response.data[key].description
+            description: response.data[key].description,
+            category: response.data[key].category || 'Diğer'
         }
         expenses.push(expensObj);
         }
@@ -35,4 +36,13 @@ export  function updateExpense(id, expenseData){
 
 export function deleteExpense(id){
     return axios.delete(BACKEND_URL + `/expenses/${id}.json`);
+}
+
+export async function fetchBusinessData() {
+    const response = await axios.get(BACKEND_URL + '/business.json');
+    return response.data;
+}
+
+export function updateBusinessData(businessData) {
+    return axios.put(BACKEND_URL + '/business.json', businessData);
 }

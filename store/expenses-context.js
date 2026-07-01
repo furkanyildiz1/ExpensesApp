@@ -13,7 +13,7 @@ export const ExpensesContext = createContext({
 function expensesReducer(state, action) {
   switch (action.type) {
     case 'ADD':
-      return [ ...action.payload, ...state];
+      return [action.payload, ...state];
     
     case 'SET':
       //fireabse de tarihe göre sıralama yapıyor bunu listemde istemediğim içn reverse ile kullanıcam 

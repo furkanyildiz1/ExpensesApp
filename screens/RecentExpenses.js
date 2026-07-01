@@ -14,14 +14,15 @@ function RecentExpenses() {
 
   useEffect(() => {
     async function getExpenses() {
-      setFetchingLoading(true);
+
       try {
         const expenses = await fetchExpenses();
+        setFetchingLoading(true);
         expensesCtx.setExpenses(expenses);
-      }catch (error) {
+      } catch (error) {
         setError('Could not fetch expenses!');
-        setFetchingLoading(false);
       }
+      setFetchingLoading(false);
     }
     getExpenses();
   }, []);
